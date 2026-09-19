@@ -17,6 +17,14 @@ The implementation focuses on exact positional formula discovery, exact Gaussian
 
 This section gives a complete, copy-paste-ready command set for the repository.
 
+### 0) Prerequisite
+
+```sh
+swipl --version
+```
+
+Confirms SWI-Prolog is installed and available on your `PATH`.
+
 ### 1) Run the focused test suite
 
 ```sh
@@ -54,6 +62,21 @@ swipl -q -s /home/runner/work/algebraplop/algebraplop/complex_detlog_plop.pl \
 Builds a program term, optimises it, and pretty-prints the optimised IR, emitted `r_spec`, and optimisation report.
 
 ### 5) Optimise from an input file and write output artifacts
+
+First create an example input term and output directory:
+
+```sh
+mkdir -p /home/runner/work/algebraplop/algebraplop/out
+cat > /home/runner/work/algebraplop/algebraplop/input.pl <<'EOF'
+position_program(
+  transform,
+  [sample([i-1],3),sample([i-2],5),sample([i-3],7),sample([i-4],9)],
+  [verify_samples([sample([i-5],11)]),original_cost(plan(quadratic,20))]
+).
+EOF
+```
+
+Then run:
 
 ```sh
 swipl -q -s /home/runner/work/algebraplop/algebraplop/complex_detlog_plop.pl \
