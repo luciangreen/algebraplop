@@ -61,6 +61,12 @@ test(cost_model_rejection) :-
     assertion(Algorithm = position_algorithm(transform, i, Formula, _, _, affine, proven, keep_original, original_plan_cheaper, _, _)),
     eval_formula(Formula, [i-5], 11).
 
+test(noninvertible_formula_rejected) :-
+    Samples = [sample([i-1],1), sample([i-2],4), sample([i-3],9)],
+    Program = position_program(square, Samples, [exhaustive_domain(true), original_cost(plan(quadratic, 100))]),
+    discover_position_algorithm(square, Program, Algorithm),
+    assertion(Algorithm = position_algorithm(square, i, i^2, none, [], quadratic, exhaustively_verified, keep_original, inverse_not_available, _, _)).
+
 test(splice_index_loop_selected) :-
     Samples = [sample([i-1],3), sample([i-2],5), sample([i-3],7), sample([i-4],9)],
     Program = splice_ir(transform, Samples, [verify_samples([sample([i-5],11)]), original_cost(plan(quadratic, 20))]),
