@@ -89,7 +89,11 @@ discover_position_algorithm(Predicate, Program, Algorithm) :-
     estimate_formula_cost(Formula, FormulaCost),
     compare_cost(OriginalCost, FormulaCost, CostDecision),
     classify_safety(Options, Samples, VerifySamples, BasisSize, Safety),
-    decide_selection(Options, Safety, CostDecision, Reason, Decision),
+    ( Inverse == none ->
+        Decision = keep_original,
+        Reason = inverse_not_available
+    ; decide_selection(Options, Safety, CostDecision, Reason, Decision)
+    ),
     Algorithm = position_algorithm(
         Predicate,
         InputVar,
