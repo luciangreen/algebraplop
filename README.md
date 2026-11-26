@@ -97,3 +97,10 @@ swipl -q -g "read_term_from_file('/home/runner/work/algebraplop/algebraplop/out/
 ```
 
 Loads each output term and prints it in an easy-to-read clause layout.
+
+## Reasons for keeping the original
+
+When a formula is only fitted to its samples (safety `experimental`), the reason
+given is `domain_not_proven`, even if the formula also has no inverse. A proved
+formula without an inverse is kept out with `inverse_not_available`, unless the
+option `forward_only(true)` says that only the forward direction is needed.
