@@ -96,4 +96,26 @@ test(complex_optimise_program) :-
     assertion(RSpec = r_spec(transform, _)),
     assertion(Report = optimisation_report(transform, _, discovered(1+2*i, affine), verification(proven), _, _, decision(select_formula, proven_equivalent_and_lower_cost), _, _)).
 
+% The safety reason must come before a missing inverse.
+test(unproved_reason_before_inverse) :-
+    Samples = [sample([i-1],1), sample([i-2],4), sample([i-3],9)],
+    Program = position_program(square_like, Samples, [original_cost(plan(quadratic, 10)), forward_only(true)]),
+    discover_position_algorithm(square_like, Program, Algorithm),
+    assertion(Algorithm = position_algorithm(square_like, i, i^2, _, _, quadratic, experimental, keep_original, domain_not_proven, _, _)).
+
+% A proved formula with no inverse is still kept out unless only the forward
+% direction is needed.
+test(no_inverse_when_proved) :-
+    Samples = [sample([i-1],1), sample([i-2],4), sample([i-3],9)],
+    Program = position_program(square_like, Samples, [original_cost(plan(quadratic, 10)), verify_samples([sample([i-4],16)])]),
+    discover_position_algorithm(square_like, Program, Algorithm),
+    assertion(Algorithm = position_algorithm(square_like, i, _, _, _, _, proven, keep_original, inverse_not_available, _, _)).
+
+test(forward_only_allows_proved_formula) :-
+    Samples = [sample([i-1],1), sample([i-2],4), sample([i-3],9)],
+    Program = position_program(square_like, Samples, [original_cost(plan(quadratic, 100)), verify_samples([sample([i-4],16)]), forward_only(true)]),
+    discover_position_algorithm(square_like, Program, Algorithm),
+    Algorithm = position_algorithm(square_like, i, _, _, _, _, proven, _, Reason, _, _),
+    assertion(Reason \== inverse_not_available).
+
 :- end_tests(complex_detlog_plop).

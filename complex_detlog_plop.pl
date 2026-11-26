@@ -89,7 +89,11 @@ discover_position_algorithm(Predicate, Program, Algorithm) :-
     estimate_formula_cost(Formula, FormulaCost),
     compare_cost(OriginalCost, FormulaCost, CostDecision),
     classify_safety(Options, Samples, VerifySamples, BasisSize, Safety),
-    ( Inverse == none ->
+    % The safety reason comes first: a formula that is not proved is kept
+    % out whatever its inverse, so its reason must not be hidden.
+    ( Safety == experimental ->
+        decide_selection(Options, Safety, CostDecision, Reason, Decision)
+    ; Inverse == none, \+ option_true(Options, forward_only) ->
         Decision = keep_original,
         Reason = inverse_not_available
     ; decide_selection(Options, Safety, CostDecision, Reason, Decision)
